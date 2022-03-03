@@ -297,11 +297,10 @@ class Molecule:
     # With charge: Fe3{2+}
     ATOM_PATTERN = re.compile(r"([A-Z][a-z]*) (\d+)? ({.+})?", re.VERBOSE)
     
-    # <group> ::= (<molecule>) | [<molecule>] | (<molecule>)<count> | [<molecule>]<count>
     # Example: (CO)3
-    GROUP_PATTERN1 = re.compile(r"^ \( \s* (.+) \s* \) (\d+)? $", re.VERBOSE)
+    GROUP_PATTERN1 = re.compile(r"^ \( \s* (.+) \s* \) (\d+)?", re.VERBOSE)
     # Example: [CO{2-}]
-    GROUP_PATTERN2 = re.compile(r"^ \[ \s* (.+) \s* \] (\d+)? $", re.VERBOSE)
+    GROUP_PATTERN2 = re.compile(r"^ \[ \s* (.+) \s* \] (\d+)?", re.VERBOSE)
     
     # Example: O{2-} (must have integer since pattern2 will handle {-} and {+})
     CHARGE_PATTERN1 = re.compile(r"^ { \s* (\d+) \s* ([+-]) \s* } $", re.VERBOSE)
@@ -409,7 +408,7 @@ class Molecule:
             # (<molecule>)<int> | (<molecule>)
             # [<molecule>)<int> | [<molecule>]
             count = 1 if m.group(2) is None else int(m.group(2))
-            molecule = cls.parse(m.group(1)) * count
+            molecule = cls.parse(m.group(1)) * count + cls.parse(molecule_str[m.end():])
         else:
             # Not grouping pattern
             # <atoms><molecule> | <atoms>
@@ -631,6 +630,7 @@ def process_equation(equation: str):
 # O3 + NO -> NO2 + O2
 # NaOH + H2SO4 -> Na2SO4 + H2O
 # Na2S2O3 + AgBr -> NaBr + Na3AgS4O6
+# Mg(OH)2 + H3PO4 -> H2O + Mg3(PO4)2
 # Fe{2+} + Cr2O7{2-} + H{+} -> Cr{3+} + H2O + Fe{3+}
 def main():
     while True:
