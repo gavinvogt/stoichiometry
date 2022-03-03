@@ -2,6 +2,6 @@
 <expr>          ::= <molecule> + <expr> | <molecule>
 <molecule>      ::= <group> | <atoms><molecule> | <atoms>
 <group>         ::= (<molecule>)<int> | (<molecule>) | [<molecule>]<int> | [<molecule>]
-<atoms>         ::= <atomic_symbol><int><charge> | <atomic_symbol><int> | <atomic_symbol> | <charge>
+<atoms>         ::= <atomic_symbol><int><charge> | <atomic_symbol><int> |<atomic_symbol><charge> | <atomic_symbol> | <charge>
 <charge>        ::= {<charge_amount>}
 <charge_amount> ::= + | - | <int>+ | <int>- | +<int> | -<int>
