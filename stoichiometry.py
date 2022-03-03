@@ -550,11 +550,17 @@ def multiple_free_variables(chemical_equation: ChemicalEquation, A):
                 if A[r, i] != 0:
                     coef = "" if A[r, i] == -1 else -A[r, i]
                     dependencies.append(f"{coef}{chemical_equation.get_var(i)}")
+            dependencies_str = " + ".join(dependencies)
+            
+            if A[r, r] != 1:
+                pivot_coef = A[r, r]
+                if len(dependencies) == 1:
+                    dependencies_str + f"{dependencies_str} / {pivot_coef}"
+                else:
+                    dependencies_str = f"({dependencies_str}) / {pivot_coef}"
             
             # Print out the equation for this variable in the chemical equation
-            coef = "" if A[r, r] == 1 else A[r, r]
-            print(f"  [DEP] {coef}{chemical_equation.get_var(r)} =",
-                " + ".join(dependencies))
+            print(f"  [DEP] {chemical_equation.get_var(r)} =", dependencies_str)
     
     # Print out the free variables
     free_vars = get_free_variables(A)
