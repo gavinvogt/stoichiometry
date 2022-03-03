@@ -1,5 +1,5 @@
 # To run
-Run `stoichiometry.py` from the command line and enter chemical equations.
+Run `stoichiometry.py` from the command line and enter chemical equations to balance.
 
 # Results
 If there is only one possible ratio between the molecular quantities, displays the balanced equation.
