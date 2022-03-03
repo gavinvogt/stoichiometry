@@ -298,9 +298,9 @@ class Molecule:
     ATOM_PATTERN = re.compile(r"([A-Z][a-z]*) (\d+)? ({.+})?", re.VERBOSE)
     
     # Example: (CO)3
-    GROUP_PATTERN1 = re.compile(r"^ \( \s* (.+) \s* \) (\d+)?", re.VERBOSE)
+    GROUP_PATTERN1 = re.compile(r"^ \( \s* ([^()]+) \s* \) (\d+)?", re.VERBOSE)
     # Example: [CO{2-}]
-    GROUP_PATTERN2 = re.compile(r"^ \[ \s* (.+) \s* \] (\d+)?", re.VERBOSE)
+    GROUP_PATTERN2 = re.compile(r"^ \[ \s* ([^[\]]+) \s* \] (\d+)?", re.VERBOSE)
     
     # Example: O{2-} (must have integer since pattern2 will handle {-} and {+})
     CHARGE_PATTERN1 = re.compile(r"^ { \s* (\d+) \s* ([+-]) \s* } $", re.VERBOSE)
@@ -407,6 +407,7 @@ class Molecule:
             # Either matches () or [] grouping
             # (<molecule>)<int> | (<molecule>)
             # [<molecule>)<int> | [<molecule>]
+            print("parsing group", m.group(1))
             count = 1 if m.group(2) is None else int(m.group(2))
             molecule = cls.parse(m.group(1)) * count + cls.parse(molecule_str[m.end():])
         else:
