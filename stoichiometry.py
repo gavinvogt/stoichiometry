@@ -407,7 +407,6 @@ class Molecule:
             # Either matches () or [] grouping
             # (<molecule>)<int> | (<molecule>)
             # [<molecule>)<int> | [<molecule>]
-            print("parsing group", m.group(1))
             count = 1 if m.group(2) is None else int(m.group(2))
             molecule = cls.parse(m.group(1)) * count + cls.parse(molecule_str[m.end():])
         else:
@@ -541,6 +540,7 @@ def multiple_free_variables(chemical_equation: ChemicalEquation, A):
     print("Solution:", end=" ")
     chemical_equation.print_symbolic()
     
+    # Print out the dependent variables
     row_count, column_count = A.shape
     for r in range(row_count):
         # Guaranteed that every element A[r, i] = 0 for i < r due to rref
@@ -548,12 +548,26 @@ def multiple_free_variables(chemical_equation: ChemicalEquation, A):
             # Found a pivot
             dependencies = []
             for i in range(r + 1, column_count):
-                if A[r, i] != 0:
-                    coef = "" if A[r, i] == -1 else -A[r, i]
-                    dependencies.append(f"{coef}{chemical_equation.get_var(i)}")
-            dependencies_str = " + ".join(dependencies)
+                dep_coef = A[r, i]
+                if dep_coef != 0:
+                    # Found a dependency
+                    var_name = chemical_equation.get_var(i)
+                    dependencies.append( (-dep_coef, var_name) )
+            dependencies_str = None
+            for dep_coef, var_name in dependencies:
+                coef_str = "" if abs(dep_coef) == 1 else abs(dep_coef)
+                if dependencies_str is None:
+                    # First dependency in the string
+                    sign = "-" if dep_coef < 0 else ""
+                    dependencies_str = f"{sign}{coef_str}{var_name}"
+                else:
+                    # Adding to other dependencies
+                    sign = "-" if dep_coef < 0 else "+"
+                    dependencies_str += f" {sign} {coef_str}{var_name}"
             
-            if A[r, r] != 1:
+            pivot_coef = A[r, r]
+            if pivot_coef != 1:
+                # Need to divide the dependencies_str by the coefficient of the pivot
                 pivot_coef = A[r, r]
                 if len(dependencies) == 1:
                     dependencies_str + f"{dependencies_str} / {pivot_coef}"
